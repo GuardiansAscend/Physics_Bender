@@ -1,5 +1,6 @@
-Material Grass : Common/MatDefs/Light/Lighting.j3md {
+Material Grass : Common/MatDefs/Misc/Unshaded.j3md {
      MaterialParameters {
+        LightMap : Repeat "Textures/Dark-Green-Grass-Texture.jpg"
      }
     AdditionalRenderState {
     }

@@ -15,11 +15,13 @@ import com.jme3.input.KeyInput;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
+import com.jme3.texture.Texture;
 
 /**
  *
@@ -46,20 +48,30 @@ public class MainWorld extends AbstractAppState {
         super.initialize(stateManager, app);
         rootNode.attachChild(localRootNode);
         
-        
-        Box b = new Box(1.00000001f, 1, 1.2f);
+        Spatial classicGate = assetManager.loadModel("Models/classicgate.obj");
+        Box b = new Box(4, 0.0001f, 4);
         Box BOKS = new Box(10, 0.5f, 1);
         Geometry geom = new Geometry("Box", b);
         Geometry geomm = new Geometry("Boxy", BOKS);
-
-        Material mat = assetManager.loadMaterial("Materials/BlueBoat.j3m");
         
+        Material gateMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        gateMat.setColor("Color", ColorRGBA.Blue);
+        classicGate.setMaterial(gateMat);
+        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        Texture grass = assetManager.loadTexture("Textures/Dark-Green-Grass-Texture.jpg");
+        geom.getMesh().scaleTextureCoordinates(new Vector2f(25,25));
+        grass.setWrap(Texture.WrapMode.Repeat);
+        mat.setTexture("LightMap", grass);
         Material mate = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         geom.setMaterial(mat);
         mate.setColor("Color", ColorRGBA.Yellow);
         geomm.setMaterial(mate);
+        geom.setLocalTranslation(0, 0, 0);
+        classicGate.setLocalTranslation(0,0,0);
         localRootNode.attachChild(geom);
-        localRootNode.attachChild(geomm);
+        localRootNode.attachChild(classicGate);
+//        localRootNode.attachChild(geomm);
+        
     }
     @Override
     public void cleanup(){
@@ -72,18 +84,17 @@ public class MainWorld extends AbstractAppState {
         Spatial geom = localRootNode.getChild("Box");
         Spatial geomm = localRootNode.getChild("Boxy");
         if(geom != null){
-            Geometry geomme = new Geometry("Boxy", new Box(10, 0.5f, 1));
+            Geometry geomme = new Geometry("Boxy", new Box(2, 0.5f, 2));
             Material mate = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
             mate.setColor("Color", ColorRGBA.Yellow);
             geomme.setMaterial(mate);
 //            double angleThing = 0;
             angleThing+= 0.001f;
-            float scale = 0.01f + (float)Math.cos(angleThing);
-//            geomm = geomme.clone().scale(angleThing);
-            geomm.scale(angleThing);
+            float scale = 1 + (float)Math.cos(angleThing);
+            geomm = geomme.clone().scale(scale);
+//            geomm.scale(angleThing);
             Vector3f mov = new Vector3f(0,-0.005f,0);
             
-            geom.move(mov);
 //            geomm.scale(scale);
         }
     }
