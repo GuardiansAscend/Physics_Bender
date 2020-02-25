@@ -1,0 +1,6 @@
+Material Grass : Common/MatDefs/Light/Lighting.j3md {
+     MaterialParameters {
+     }
+    AdditionalRenderState {
+    }
+}
