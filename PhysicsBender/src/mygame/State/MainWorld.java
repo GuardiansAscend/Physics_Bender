@@ -10,13 +10,18 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
+import com.jme3.bounding.BoundingBox;
+import com.jme3.bounding.BoundingVolume;
+import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
+import com.jme3.bullet.control.CharacterControl;
+import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector2f;
-import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -34,6 +39,9 @@ public class MainWorld extends AbstractAppState {
     private Node localRootNode = new Node("Level 1");
     private final AssetManager assetManager;
     private final InputManager inputManager;
+    private BulletAppState bulletAppState;
+    private Spatial player;
+    private CharacterControl playerControl;
     
     public MainWorld(SimpleApplication app){
         rootNode = app.getRootNode();
@@ -47,30 +55,62 @@ public class MainWorld extends AbstractAppState {
     public void initialize(AppStateManager stateManager, Application app){
         super.initialize(stateManager, app);
         rootNode.attachChild(localRootNode);
+        //loading the physics controller
+        bulletAppState = new BulletAppState();
+        bulletAppState.setDebugEnabled(true);
+        stateManager.attach(bulletAppState);
         
-        Spatial classicGate = assetManager.loadModel("Models/classicgate.obj");
-        Box b = new Box(4, 0.0001f, 4);
-        Box BOKS = new Box(10, 0.5f, 1);
-        Geometry geom = new Geometry("Box", b);
-        Geometry geomm = new Geometry("Boxy", BOKS);
+        //loading the scene
         
-        Material gateMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        gateMat.setColor("Color", ColorRGBA.Blue);
-        classicGate.setMaterial(gateMat);
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        Texture grass = assetManager.loadTexture("Textures/Dark-Green-Grass-Texture.jpg");
-        geom.getMesh().scaleTextureCoordinates(new Vector2f(25,25));
-        grass.setWrap(Texture.WrapMode.Repeat);
-        mat.setTexture("LightMap", grass);
-        Material mate = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        geom.setMaterial(mat);
-        mate.setColor("Color", ColorRGBA.Yellow);
-        geomm.setMaterial(mate);
-        geom.setLocalTranslation(0, 0, 0);
-        classicGate.setLocalTranslation(0,0,0);
-        localRootNode.attachChild(geom);
-        localRootNode.attachChild(classicGate);
+        Spatial scene = assetManager.loadModel("Scenes/mainWorld.j3o");
+        localRootNode.attachChild(scene);
+        //loading the floor and attaching physics
+        
+        Spatial floor = localRootNode.getChild("floor");
+        bulletAppState.getPhysicsSpace().add(floor.getControl(RigidBodyControl.class));
+        
+        //loading the player and attaching physics
+        
+        player = localRootNode.getChild("player");
+        BoundingBox boundingBox = (BoundingBox)player.getWorldBound();
+        float radius = boundingBox.getXExtent();
+        float height = boundingBox.getYExtent();
+        
+        CapsuleCollisionShape playerShape = new CapsuleCollisionShape(radius, height);
+        
+        playerControl = new CharacterControl(playerShape, 1.0f);
+        player.addControl(playerControl);
+        
+        bulletAppState.getPhysicsSpace().add(playerControl);
+        
+//        Spatial classicGate = assetManager.loadModel("Models/outsideDoor.obj");
+//        Spatial boat = assetManager.loadModel("Models/Boat/boat.j3o");
+//        Box b = new Box(4, 0.0001f, 4);
+//        Geometry geom = new Geometry("Box", b);
+//        
+//        Material boatMat = assetManager.loadMaterial("Materials/BlueBoat.j3m");
+        
+//        Material gateMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+//        gateMat.setTexture("LightMap", gateText);
+//        gateMat.setColor("Color", ColorRGBA.Blue);
+//        classicGate.setMaterial(gateMat);
+//        
+//        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+//        Texture grass = assetManager.loadTexture("Textures/Dark-Green-Grass-Texture.jpg");
+//        geom.getMesh().scaleTextureCoordinates(new Vector2f(25,25));
+//        grass.setWrap(Texture.WrapMode.Repeat);
+//        mat.setTexture("LightMap", grass);
+//        
+//        geom.setMaterial(mat);
+//        boat.setMaterial(boatMat);
+//        geom.setLocalTranslation(0, 0, 0);
+//        classicGate.setLocalTranslation(0,0,0);
+//        classicGate.scale(0.0005f);
+//        localRootNode.attachChild(geom);
+//        localRootNode.attachChild(classicGate);
+//        localRootNode.attachChild(boat);
 //        localRootNode.attachChild(geomm);
+        localRootNode.attachChild(scene);
         
     }
     @Override
@@ -78,24 +118,9 @@ public class MainWorld extends AbstractAppState {
         rootNode.detachChild(localRootNode);
         super.cleanup();
     }
-    private float angleThing = 1;
     @Override
     public void update(float tpf){
-        Spatial geom = localRootNode.getChild("Box");
-        Spatial geomm = localRootNode.getChild("Boxy");
-        if(geom != null){
-            Geometry geomme = new Geometry("Boxy", new Box(2, 0.5f, 2));
-            Material mate = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-            mate.setColor("Color", ColorRGBA.Yellow);
-            geomme.setMaterial(mate);
-//            double angleThing = 0;
-            angleThing+= 0.001f;
-            float scale = 1 + (float)Math.cos(angleThing);
-            geomm = geomme.clone().scale(scale);
-//            geomm.scale(angleThing);
-            Vector3f mov = new Vector3f(0,-0.005f,0);
             
-//            geomm.scale(scale);
-        }
+        
     }
 }
