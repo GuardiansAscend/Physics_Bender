@@ -125,7 +125,7 @@ public class MainWorld extends AbstractAppState {
         
         
         
-        // setup the inputs
+        // setup the input
         inputManager.addMapping("pause", new KeyTrigger(KeyInput.KEY_P));
         inputManager.addMapping("up", new KeyTrigger(KeyInput.KEY_W));
         inputManager.addMapping("down", new KeyTrigger(KeyInput.KEY_S));
