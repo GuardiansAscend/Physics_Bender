@@ -22,6 +22,7 @@ import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector2f;
@@ -106,6 +107,33 @@ public class MainWorld extends AbstractAppState {
         bulletAppState.getPhysicsSpace().add(floor.getControl(RigidBodyControl.class));
         
         //loading the player and attaching physics
+        Spatial playerModel = assetManager.loadModel("Models/newOutGate.j3o");
+        
+        localRootNode.attachChild(playerModel);
+        Geometry OGgeom0 = (Geometry) localRootNode.getChild("newOutGate-geom-0");
+        Geometry OGgeom1 = (Geometry) localRootNode.getChild("newOutGate-geom-1");
+        Geometry OGgeom2 = (Geometry) localRootNode.getChild("newOutGate-geom-2");
+        Geometry OGgeom3 = (Geometry) localRootNode.getChild("newOutGate-geom-3");
+        Material OGmat0 = new Material(assetManager,"Common/MatDefs/Misc/Unshaded.j3md");
+        Material OGmat1 = new Material(assetManager,"Common/MatDefs/Misc/Unshaded.j3md");
+        Material OGmat2 = new Material(assetManager,"Common/MatDefs/Misc/Unshaded.j3md");
+        Material OGmat3 = new Material(assetManager,"Common/MatDefs/Misc/Unshaded.j3md");
+        OGmat0.setTexture("LightMap", assetManager.loadTexture("Textures/outGate/Boole.1Surface_Color.jpg"));
+        OGmat1.setTexture("LightMap", assetManager.loadTexture("Textures/outGate/Null.1Surface_Color.jpg"));
+        OGmat2.setTexture("LightMap", assetManager.loadTexture("Textures/outGate/Symmetry.1Surface_Color.jpg"));
+        OGmat3.setTexture("LightMap", assetManager.loadTexture("Textures/outGate/Symmetry.2Surface_Color.jpg"));
+        OGgeom0.setMaterial(OGmat0);
+        OGgeom1.setMaterial(OGmat1);
+        OGgeom2.setMaterial(OGmat2);
+        OGgeom3.setMaterial(OGmat3);
+        
+//        DirectionalLight sun = new DirectionalLight();
+//        DirectionalLight sun2 = new DirectionalLight();
+//        sun.setDirection(new Vector3f(-1f,1f,-1f).normalizeLocal());
+//        sun2.setDirection(new Vector3f(1f,1f,-1f).normalizeLocal());
+//        localRootNode.getChild("DirectionalLight");
+//        localRootNode.addLight(sun);
+//        localRootNode.addLight(sun2);
         
         player = localRootNode.getChild("player");
         BoundingBox boundingBox = (BoundingBox)player.getWorldBound();
