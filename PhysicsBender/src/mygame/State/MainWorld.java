@@ -32,6 +32,9 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
+import com.jme3.terrain.Terrain;
+import com.jme3.terrain.geomipmap.TerrainLodControl;
+import com.jme3.terrain.geomipmap.TerrainQuad;
 import com.jme3.texture.Texture;
 import com.jme3.util.SkyFactory;
 
@@ -92,19 +95,6 @@ public class MainWorld extends AbstractAppState {
         Texture upIMG = app.getAssetManager().loadTexture("Textures/Sky/topView.jpg");
         Texture downIMG = app.getAssetManager().loadTexture("Textures/Sky/bottomView.jpg");
         localRootNode.attachChild(SkyFactory.createSky(app.getAssetManager(), west, east, front, back, upIMG, downIMG));
-        //loading the floor and attaching physics
-        
-        Geometry floor = (Geometry) localRootNode.getChild("floor");
-        
-        Material grassMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        Texture grass = assetManager.loadTexture("Textures/Dark-Green-Grass-Texture.jpg");
-        
-        floor.getMesh().scaleTextureCoordinates(new Vector2f(25,25));
-        grass.setWrap(Texture.WrapMode.Repeat);
-        grassMat.setTexture("LightMap", grass);
-        
-        floor.setMaterial(grassMat);
-        bulletAppState.getPhysicsSpace().add(floor.getControl(RigidBodyControl.class));
         
         //loading the player and attaching physics
         Spatial playerModel = assetManager.loadModel("Models/newOutGate.j3o");
@@ -127,7 +117,7 @@ public class MainWorld extends AbstractAppState {
         OGgeom2.setMaterial(OGmat2);
         OGgeom3.setMaterial(OGmat3);
         
-//        DirectionalLight sun = new DirectionalLight();
+//       DirectionalLight sun = new DirectionalLight();
 //        DirectionalLight sun2 = new DirectionalLight();
 //        sun.setDirection(new Vector3f(-1f,1f,-1f).normalizeLocal());
 //        sun2.setDirection(new Vector3f(1f,1f,-1f).normalizeLocal());
@@ -172,6 +162,18 @@ public class MainWorld extends AbstractAppState {
         
         //setup chaseCam
         chaseCam = new ChaseCamera(camera, player, inputManager);
+        
+        //load terrain
+        Node rootScene = (Node) scene;
+        TerrainLodControl terrainControl = rootScene.getControl(TerrainLodControl.class);
+        if(terrainControl != null)
+            terrainControl.setCamera(camera);
+        Spatial terrain = rootScene.getChild("terrain-mainWorld");
+        terrain.addControl(new RigidBodyControl(0));
+        bulletAppState.getPhysicsSpace().add(terrain);
+        
+        System.out.println(rootScene.getChildren());
+        
         
 //        Spatial classicGate = assetManager.loadModel("Models/outsideDoor.obj");
 //        Spatial boat = assetManager.loadModel("Models/Boat/boat.j3o");
