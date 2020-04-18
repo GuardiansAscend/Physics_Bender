@@ -129,7 +129,7 @@ public class MainWorld extends AbstractAppState {
         float radius = boundingBox.getXExtent();
         float height = boundingBox.getYExtent();
         
-        CapsuleCollisionShape playerShape = new CapsuleCollisionShape(radius, height);
+        CapsuleCollisionShape playerShape = new CapsuleCollisionShape(radius, (height + 3.2f));
         
         playerControl = new CharacterControl(playerShape, 1.0f);
         playerControl.setUp(new Vector3f(0f,1f,0f));
@@ -169,8 +169,6 @@ public class MainWorld extends AbstractAppState {
         Spatial terrain = rootScene.getChild("terrain-mainWorld");
         terrain.addControl(new RigidBodyControl(0));
         bulletAppState.getPhysicsSpace().add(terrain);
-        
-        System.out.println(rootScene.getChildren());
         
         
 //        Spatial classicGate = assetManager.loadModel("Models/outsideDoor.obj");

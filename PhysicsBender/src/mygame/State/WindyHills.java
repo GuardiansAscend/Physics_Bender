@@ -83,7 +83,7 @@ public class WindyHills extends AbstractAppState {
         rootNode.attachChild(localRootNode);
         //loading the physics controller
         bulletAppState = new BulletAppState();
-        bulletAppState.setDebugEnabled(true);
+        bulletAppState.setDebugEnabled(false);
         stateManager.attach(bulletAppState);
         
         //loading the scene
@@ -126,7 +126,7 @@ public class WindyHills extends AbstractAppState {
         float radius = boundingBox.getXExtent();
         float height = boundingBox.getYExtent();
         
-        CapsuleCollisionShape playerShape = new CapsuleCollisionShape(radius, height);
+        CapsuleCollisionShape playerShape = new CapsuleCollisionShape(radius, (height + 4.65f));
         
         playerControl = new CharacterControl(playerShape, 1.0f);
         playerControl.setUp(new Vector3f(0f,1f,0f));
@@ -187,7 +187,7 @@ public class WindyHills extends AbstractAppState {
         camDir.normalizeLocal();
         camLeft.normalizeLocal();
         
-        playerWalkDirr.set(wind);
+        //playerWalkDirr.set(wind);
         
         if (left) playerWalkDirr.addLocal(camLeft);
         if (right) playerWalkDirr.addLocal(camLeft.negate());
@@ -195,8 +195,8 @@ public class WindyHills extends AbstractAppState {
         if (down) playerWalkDirr.addLocal(camDir.negate());
         
         if(player != null) {
-            playerWalkDirr.multLocal(2.5f).multLocal(tpf);
-            player.setLocalTranslation(wind);
+            playerWalkDirr.multLocal(5f).multLocal(tpf);
+            //player.setLocalTranslation(wind);
             playerControl.setWalkDirection(playerWalkDirr);
         }
         

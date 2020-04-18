@@ -110,7 +110,7 @@ public class GravityWorld extends AbstractAppState{
         float radius = boundingBox.getXExtent();
         float height = boundingBox.getYExtent();
         
-        CapsuleCollisionShape playerShape = new CapsuleCollisionShape(radius, height);
+        CapsuleCollisionShape playerShape = new CapsuleCollisionShape(radius, (height + 4f));
         playerControl = new CharacterControl(playerShape, 1.0f);
         playerControl.setUp(new Vector3f(0f,1f,0f));
         player.addControl(playerControl);
