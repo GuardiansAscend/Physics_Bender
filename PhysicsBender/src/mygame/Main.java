@@ -3,6 +3,7 @@ package mygame;
 import com.jme3.app.SimpleApplication;
 import com.jme3.renderer.RenderManager;
 import mygame.State.MainWorld;
+import mygame.State.GravityWorld;
 
 /**
  * This is the Main Class of your Game. You should only do initialization here.
@@ -18,7 +19,7 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
-        stateManager.attach(new MainWorld(this));
+        stateManager.attach(new GravityWorld(this));
     }
 
     @Override

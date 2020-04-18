@@ -25,7 +25,6 @@ import com.jme3.input.controls.KeyTrigger;
 import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Geometry;
@@ -79,7 +78,7 @@ public class MainWorld extends AbstractAppState {
         rootNode.attachChild(localRootNode);
         //loading the physics controller
         bulletAppState = new BulletAppState();
-        bulletAppState.setDebugEnabled(true);
+        bulletAppState.setDebugEnabled(false);
         stateManager.attach(bulletAppState);
         
         //loading the scene
@@ -139,7 +138,6 @@ public class MainWorld extends AbstractAppState {
         bulletAppState.getPhysicsSpace().add(playerControl);
         
         bulletAppState.getPhysicsSpace().setGravity(new Vector3f(0f,9.8f,0f));
-        bulletAppState.getPhysicsSpace();
         
         
         
@@ -228,7 +226,7 @@ public class MainWorld extends AbstractAppState {
         if (down) playerWalkDirr.addLocal(camDir.negate());
         
         if(player != null) {
-            playerWalkDirr.multLocal(2.5f).multLocal(tpf);
+            playerWalkDirr.multLocal(5.0f).multLocal(tpf);
             playerControl.setWalkDirection(playerWalkDirr);
         }
         
