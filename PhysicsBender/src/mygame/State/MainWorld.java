@@ -13,6 +13,7 @@ import com.jme3.asset.AssetManager;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bounding.BoundingVolume;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
@@ -25,12 +26,15 @@ import com.jme3.input.controls.KeyTrigger;
 import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Matrix3f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.control.Control;
 import com.jme3.scene.shape.Box;
+import com.jme3.scene.shape.Sphere;
 import com.jme3.terrain.Terrain;
 import com.jme3.terrain.geomipmap.TerrainLodControl;
 import com.jme3.terrain.geomipmap.TerrainQuad;
@@ -95,10 +99,20 @@ public class MainWorld extends AbstractAppState {
         Texture downIMG = app.getAssetManager().loadTexture("Textures/Sky/bottomView.jpg");
         localRootNode.attachChild(SkyFactory.createSky(app.getAssetManager(), west, east, front, back, upIMG, downIMG));
         
-        //loading the player and attaching physics
-        Spatial playerModel = assetManager.loadModel("Models/newOutGate.j3o");
+        //loading the Doors
+        //Door 1
+        Spatial doorOneModel = assetManager.loadModel("Models/newOutGate.j3o");
+        doorOneModel.setLocalTranslation(15.5f, 7f, 55);
+        doorOneModel.rotate(0,((float) -(5*Math.PI/7.2)), 0);
+        localRootNode.attachChild(doorOneModel);
         
-        localRootNode.attachChild(playerModel);
+        // Scrapped Adding a rigid body to it, it makes the app run slow 
+//        BoundingBox doorOneBB = (BoundingBox)doorOneModel.getWorldBound();
+//        BoxCollisionShape shape = new BoxCollisionShape(new Vector3f(doorOneBB.getXExtent(),doorOneBB.getZExtent(),doorOneBB.getYExtent()));
+//        RigidBodyControl doorOneRigidBody = new RigidBodyControl(shape, 1);
+//        doorOneModel.addControl(doorOneRigidBody);
+//        bulletAppState.getPhysicsSpace().add(doorOneRigidBody);
+
         Geometry OGgeom0 = (Geometry) localRootNode.getChild("newOutGate-geom-0");
         Geometry OGgeom1 = (Geometry) localRootNode.getChild("newOutGate-geom-1");
         Geometry OGgeom2 = (Geometry) localRootNode.getChild("newOutGate-geom-2");
@@ -116,28 +130,57 @@ public class MainWorld extends AbstractAppState {
         OGgeom2.setMaterial(OGmat2);
         OGgeom3.setMaterial(OGmat3);
         
-//       DirectionalLight sun = new DirectionalLight();
-//        DirectionalLight sun2 = new DirectionalLight();
-//        sun.setDirection(new Vector3f(-1f,1f,-1f).normalizeLocal());
-//        sun2.setDirection(new Vector3f(1f,1f,-1f).normalizeLocal());
-//        localRootNode.getChild("DirectionalLight");
-//        localRootNode.addLight(sun);
-//        localRootNode.addLight(sun2);
+        //Door 2
+        Spatial doorTwoModel = assetManager.loadModel("Models/outsideDoor.j3o");
+        doorTwoModel.rotate(0, ((float) -(5*Math.PI/7.2)), 0);
+        doorTwoModel.scale(0.0025f);
+        doorTwoModel.setLocalTranslation(-19, 7, 55);
+        localRootNode.attachChild(doorTwoModel);
+//        Geometry D2G0 = (Geometry) doorTwoModel;
+//        Material D2M0 = new Material(assetManager,"Common/MatDefs/Misc/Unshaded.j3md");
+//        D2G0.setMaterial(assetManager.loadMaterial("Models/"));
+//        D2M0.setColor("Color", ColorRGBA.Pink);
+//        D2G0.setMaterial(D2M0);
+
+        //Door 3
+        Spatial teleGateModel = assetManager.loadModel("Models/TeleportationGate_V2/14023_Teleportation_Gate_v2.j3o");
+        teleGateModel.rotate(-(float) (Math.PI/2),(float) Math.PI/2, 0);
+        teleGateModel.scale(0.03f);
+        teleGateModel.setLocalTranslation(-56.5f, 8, 31.5f);
+        localRootNode.attachChild(teleGateModel);
+        Geometry teleGate = (Geometry) localRootNode.getChild("14023_Teleportation_Gate_v2_l1-geom-0");
+        Geometry teleGate1 = (Geometry) localRootNode.getChild("14023_Teleportation_Gate_v2_l1-geom-1");
+        Geometry teleGate2 = (Geometry) localRootNode.getChild("14023_Teleportation_Gate_v2_l1-geom-2");
         
+        Material teleGateMat = new Material(assetManager,"Common/MatDefs/Misc/Unshaded.j3md");
+        Material teleGateMat1 = new Material(assetManager,"Common/MatDefs/Misc/Unshaded.j3md");
+        teleGateMat.setTexture("LightMap", assetManager.loadTexture("Textures/TeleGateMat/14023_TeleportationGate_V2_diffuse.jpg"));
+        teleGateMat1.setTexture("LightMap", assetManager.loadTexture("Textures/TeleGateMat/14023_TeleportationGate_V2_diffuse2.jpg"));
+        
+        teleGate.setMaterial(teleGateMat1);
+        teleGate1.setMaterial(teleGateMat1);
+        teleGate2.setMaterial(teleGateMat);
+        
+        //KNOB
+        Spatial knob = assetManager.loadModel("Models/10905_door knob_v1_L3.j3o");
+        knob.setLocalTranslation(8, 10, 10);
+        localRootNode.attachChild(knob);
+        Geometry knobb = (Geometry) knob;
+        Material knobMat = new Material(assetManager,"Common/MatDefs/Misc/Unshaded.j3md");
+        knobMat.setTexture("LightMap", assetManager.loadTexture("Textures/knob.png"));
+        knob.setMaterial(knobMat);
+        
+        //loading player and attaching controls to it
         player = localRootNode.getChild("player");
         BoundingBox boundingBox = (BoundingBox)player.getWorldBound();
-        float radius = boundingBox.getXExtent();
-        float height = boundingBox.getYExtent();
-        
-        CapsuleCollisionShape playerShape = new CapsuleCollisionShape(radius, (height + 3.2f));
-        
+        BoxCollisionShape playerShape = new BoxCollisionShape(new Vector3f(boundingBox.getXExtent(),boundingBox.getYExtent()*2-0.31f,boundingBox.getZExtent()));
         playerControl = new CharacterControl(playerShape, 1.0f);
         playerControl.setUp(new Vector3f(0f,1f,0f));
         player.addControl(playerControl);
         
         bulletAppState.getPhysicsSpace().add(playerControl);
         
-        bulletAppState.getPhysicsSpace().setGravity(new Vector3f(0f,9.8f,0f));
+        bulletAppState.getPhysicsSpace().setGravity(new Vector3f(0f,-9.8f,0f));
         
         
         
@@ -160,6 +203,7 @@ public class MainWorld extends AbstractAppState {
         
         //setup chaseCam
         chaseCam = new ChaseCamera(camera, player, inputManager);
+        chaseCam.setUpVector(new Vector3f(0,1,0));
         
         //load terrain
         Node rootScene = (Node) scene;
@@ -170,34 +214,8 @@ public class MainWorld extends AbstractAppState {
         terrain.addControl(new RigidBodyControl(0));
         bulletAppState.getPhysicsSpace().add(terrain);
         
+        System.out.println(rootScene.getChildren());
         
-//        Spatial classicGate = assetManager.loadModel("Models/outsideDoor.obj");
-//        Spatial boat = assetManager.loadModel("Models/Boat/boat.j3o");
-//        Box b = new Box(4, 0.0001f, 4);
-//        Geometry geom = new Geometry("Box", b);
-//        
-//        Material boatMat = assetManager.loadMaterial("Materials/BlueBoat.j3m");
-        
-//        Material gateMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-//        gateMat.setTexture("LightMap", gateText);
-//        gateMat.setColor("Color", ColorRGBA.Blue);
-//        classicGate.setMaterial(gateMat);
-//        
-//        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-//        Texture grass = assetManager.loadTexture("Textures/Dark-Green-Grass-Texture.jpg");
-//        geom.getMesh().scaleTextureCoordinates(new Vector2f(25,25));
-//        grass.setWrap(Texture.WrapMode.Repeat);
-//        mat.setTexture("LightMap", grass);
-//        
-//        geom.setMaterial(mat);
-//        boat.setMaterial(boatMat);
-//        geom.setLocalTranslation(0, 0, 0);
-//        classicGate.setLocalTranslation(0,0,0);
-//        classicGate.scale(0.0005f);
-//        localRootNode.attachChild(geom);
-//        localRootNode.attachChild(classicGate);
-//        localRootNode.attachChild(boat);
-//        localRootNode.attachChild(geomm);
         localRootNode.attachChild(scene);
         
     }
@@ -208,6 +226,7 @@ public class MainWorld extends AbstractAppState {
     }
     @Override
     public void update(float tpf){
+        //updating the camera and fetching its directions
         Vector3f camDir = camera.getDirection().clone();
         Vector3f camLeft = camera.getLeft().clone();
         camDir.y = 0;
@@ -215,7 +234,7 @@ public class MainWorld extends AbstractAppState {
         
         camDir.normalizeLocal();
         camLeft.normalizeLocal();
-        
+        //updating the player position
         playerWalkDirr.set(new Vector3f(0f,0f,0f));
         
         if (left) playerWalkDirr.addLocal(camLeft);
@@ -224,10 +243,10 @@ public class MainWorld extends AbstractAppState {
         if (down) playerWalkDirr.addLocal(camDir.negate());
         
         if(player != null) {
-            playerWalkDirr.multLocal(5.0f).multLocal(tpf);
+            playerWalkDirr.multLocal(30.0f).multLocal(tpf);
             playerControl.setWalkDirection(playerWalkDirr);
         }
-        
+        //checking if the player is at a door and making him swap world
     }
     private final ActionListener actionListener = new ActionListener() {
         @Override

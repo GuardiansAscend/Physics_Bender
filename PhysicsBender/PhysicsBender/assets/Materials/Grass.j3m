@@ -1,0 +1,12 @@
+Material Grass : Common/MatDefs/Misc/Unshaded.j3md {
+     MaterialParameters {
+        LightMap : Repeat "Textures/Dark-Green-Grass-Texture.jpg"
+        VertexColor : false
+        SeparateTexCoord : false
+        UseInstancing : false
+        HardwareShadows : false
+        BackfaceShadows : false
+     }
+    AdditionalRenderState {
+    }
+}

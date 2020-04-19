@@ -110,7 +110,7 @@ public class GravityWorld extends AbstractAppState{
         float radius = boundingBox.getXExtent();
         float height = boundingBox.getYExtent();
         
-        CapsuleCollisionShape playerShape = new CapsuleCollisionShape(radius, (height + 4f));
+        CapsuleCollisionShape playerShape = new CapsuleCollisionShape(radius, height);
         playerControl = new CharacterControl(playerShape, 1.0f);
         playerControl.setUp(new Vector3f(0f,1f,0f));
         player.addControl(playerControl);
@@ -138,6 +138,7 @@ public class GravityWorld extends AbstractAppState{
         
         //setup chaseCam
         chaseCam = new ChaseCamera(camera, player, inputManager);
+        chaseCam.setUpVector(new Vector3f(0,1,0));
         
         //load terrain
         Node rootScene = (Node) scene;

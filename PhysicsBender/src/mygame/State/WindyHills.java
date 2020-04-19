@@ -13,6 +13,7 @@ import com.jme3.asset.AssetManager;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bounding.BoundingVolume;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
@@ -31,6 +32,7 @@ import com.jme3.renderer.Camera;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.control.Control;
 import com.jme3.scene.shape.Box;
 import com.jme3.terrain.Terrain;
 import com.jme3.terrain.geomipmap.TerrainLodControl;
@@ -100,10 +102,16 @@ public class WindyHills extends AbstractAppState {
         Texture downIMG = app.getAssetManager().loadTexture("Textures/Sky/bottomView.jpg");
         localRootNode.attachChild(SkyFactory.createSky(app.getAssetManager(), west, east, front, back, upIMG, downIMG));
         
-        //loading the player and attaching physics
-        Spatial playerModel = assetManager.loadModel("Models/newOutGate.j3o");
+        //loading the gates and attaching physics
+        Spatial doorOneModel = assetManager.loadModel("Models/newOutGate.j3o");
+        doorOneModel.setLocalTranslation(-40, 0, -40);
+        BoundingBox doorOneBB = (BoundingBox)doorOneModel.getWorldBound();
+        BoxCollisionShape shape = new BoxCollisionShape(new Vector3f(doorOneBB.getXExtent(),doorOneBB.getZExtent(),doorOneBB.getYExtent()));
+        Control doorOneRigidBody = new RigidBodyControl(shape);
+        doorOneModel.addControl(doorOneRigidBody);
+//        bulletAppState.getPhysicsSpace().add(doorOneRigidBody);
         
-        localRootNode.attachChild(playerModel);
+        localRootNode.attachChild(doorOneModel);
         Geometry OGgeom0 = (Geometry) localRootNode.getChild("newOutGate-geom-0");
         Geometry OGgeom1 = (Geometry) localRootNode.getChild("newOutGate-geom-1");
         Geometry OGgeom2 = (Geometry) localRootNode.getChild("newOutGate-geom-2");
@@ -120,13 +128,13 @@ public class WindyHills extends AbstractAppState {
         OGgeom1.setMaterial(OGmat1);
         OGgeom2.setMaterial(OGmat2);
         OGgeom3.setMaterial(OGmat3);
-        
+        //loading the player and attaching physics
         player = localRootNode.getChild("player");
         BoundingBox boundingBox = (BoundingBox)player.getWorldBound();
         float radius = boundingBox.getXExtent();
         float height = boundingBox.getYExtent();
         
-        CapsuleCollisionShape playerShape = new CapsuleCollisionShape(radius, (height + 4.65f));
+        CapsuleCollisionShape playerShape = new CapsuleCollisionShape(radius, height);
         
         playerControl = new CharacterControl(playerShape, 1.0f);
         playerControl.setUp(new Vector3f(0f,1f,0f));
@@ -156,7 +164,7 @@ public class WindyHills extends AbstractAppState {
         
         //setup chaseCam
         chaseCam = new ChaseCamera(camera, player, inputManager);
-        
+        chaseCam.setUpVector(new Vector3f(0,1,0));
         //load terrain
         Node rootScene = (Node) scene;
         TerrainLodControl terrainControl = rootScene.getControl(TerrainLodControl.class);
@@ -166,9 +174,6 @@ public class WindyHills extends AbstractAppState {
         terrain.addControl(new RigidBodyControl(0));
         bulletAppState.getPhysicsSpace().add(terrain);
         
-        System.out.println(rootScene.getChildren());
-        
-
         localRootNode.attachChild(scene);
         
     }
@@ -187,7 +192,7 @@ public class WindyHills extends AbstractAppState {
         camDir.normalizeLocal();
         camLeft.normalizeLocal();
         
-        //playerWalkDirr.set(wind);
+        playerWalkDirr.set(wind);
         
         if (left) playerWalkDirr.addLocal(camLeft);
         if (right) playerWalkDirr.addLocal(camLeft.negate());
@@ -195,8 +200,8 @@ public class WindyHills extends AbstractAppState {
         if (down) playerWalkDirr.addLocal(camDir.negate());
         
         if(player != null) {
-            playerWalkDirr.multLocal(5f).multLocal(tpf);
-            //player.setLocalTranslation(wind);
+            playerWalkDirr.multLocal(2.5f).multLocal(tpf);
+            player.setLocalTranslation(wind);
             playerControl.setWalkDirection(playerWalkDirr);
         }
         
